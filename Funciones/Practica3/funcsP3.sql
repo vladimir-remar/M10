@@ -263,104 +263,104 @@ RETURNS text
 AS
 $$
 DECLARE
-	sql1 text;
-	sql2 text;
-	sql3 text;
-	rec record;
-	rec2 record;
-	trobat boolean := False;
-	nom varchar;
-	cognom varchar;
-	analitica bigint;
-	id_resultat bigint;
-	ret varchar :='';
-	data_res date;
-	resultat varchar :='';
-	valoracio varchar;
-	prova int;
-	n_prova varchar;
+  sql1 text;
+  sql2 text;
+  sql3 text;
+  rec record;
+  rec2 record;
+  trobat boolean := False;
+  nom varchar;
+  cognom varchar;
+  analitica bigint;
+  id_resultat bigint;
+  ret varchar :='';
+  data_res date;
+  resultat varchar :='';
+  valoracio varchar;
+  prova int;
+  n_prova varchar;
 BEGIN
-	sql1 := 'SELECT * FROM pacients WHERE idpacient = ' || id_pacient || ';';
-	
-	FOR rec IN EXECUTE(sql1) LOOP
-		trobat := True;
-		nom    := rec.nom;
-		cognom := rec.cognoms;
-		
-	END LOOP;
-	
-	IF NOT trobat THEN
-		return '-5';
-	END IF;
-	
-	trobat := False;
-	
-	IF id_analitica is not NULL THEN
-		sql1 := 'SELECT idanalitica FROM analitiques WHERE idanalitica = ' || id_analitica || ' and idpacient = ' || id_pacient || ';';
-		
-		FOR rec IN EXECUTE(sql1) LOOP
-			trobat    := True;
-			analitica := rec.idanalitica;	
-		END LOOP;
-		
-		IF NOT trobat THEN
-			return '-6';
-		END IF;
-	ELSE
-		sql1 := 'SELECT idanalitica FROM analitiques WHERE idpacient = ' || id_pacient || ' order by dataanalitica desc limit 1;';
-		FOR rec IN EXECUTE(sql1) LOOP
-			trobat    := True;
-			analitica := rec.idanalitica;	
-		END LOOP;
-		
-		IF NOT trobat THEN
-			return '-7';
-		END IF;
-	END IF;
-	
-/* #####################################################################
+  sql1 := 'SELECT * FROM pacients WHERE idpacient = ' || id_pacient || ';';
+
+  FOR rec IN EXECUTE(sql1) LOOP
+    trobat := True;
+    nom    := rec.nom;
+    cognom := rec.cognoms;
+    
+  END LOOP;
+
+  IF NOT trobat THEN
+    return '-5';
+  END IF;
+
+  trobat := False;
+
+  IF id_analitica is not NULL THEN
+    sql1 := 'SELECT idanalitica FROM analitiques WHERE idanalitica = ' || id_analitica || ' and idpacient = ' || id_pacient || ';';
+    
+    FOR rec IN EXECUTE(sql1) LOOP
+      trobat    := True;
+      analitica := rec.idanalitica;	
+    END LOOP;
+    
+    IF NOT trobat THEN
+      return '-6';
+    END IF;
+  ELSE
+    sql1 := 'SELECT idanalitica FROM analitiques WHERE idpacient = ' || id_pacient || ' order by dataanalitica desc limit 1;';
+    FOR rec IN EXECUTE(sql1) LOOP
+      trobat    := True;
+      analitica := rec.idanalitica;	
+    END LOOP;
+    
+    IF NOT trobat THEN
+      return '-7';
+    END IF;
+  END IF;
+
+  /* #####################################################################
    # HASTA AQUI, TANTO COMO EL PACIENTE COMO LA ANALITICA EXISTEN
    #####################################################################	
-*/
-	trobat := False;
-	sql1 := 'SELECT * FROM  resultats WHERE idanalitica = ' || analitica || ';';
-	
-	FOR rec IN EXECUTE(sql1) LOOP
-		
-		trobat    := True;
-		resultat  := rec.resultats;
-		data_res  := to_char(rec.dataresultat,'YYYY-MM-DD');
-		valoracio := valorar_idresultat(rec.idresultat);
-		
-		
-		
-		sql2 := 'SELECT * FROM  provestecnica WHERE idprovatecnica = ' || rec.idprovatecnica || ';';
-		
-		FOR rec2 IN EXECUTE(sql2) LOOP
-			prova := rec2.idprova;
-		END LOOP;
-		
-		sql3 := 'SELECT * FROM  catalegproves WHERE idprova = ' || prova|| ';';
-		
-		FOR rec2 IN EXECUTE(sql3) LOOP
-			n_prova :=rec2.nom_prova ;
-		END LOOP;
-		
-		ret := ret || '' || nom || '#' || cognom || '#' || data_res || '#' || prova || '#' || n_prova || '#' || resultat || '#' || valoracio || e' \n';
-		
-	
-	END LOOP;
-	
-	IF NOT trobat THEN
-		return '-8';
-	END IF;
-	
+  */
+  trobat := False;
+  sql1 := 'SELECT * FROM  resultats WHERE idanalitica = ' || analitica || ';';
+
+  FOR rec IN EXECUTE(sql1) LOOP
+    
+    trobat    := True;
+    resultat  := rec.resultats;
+    data_res  := to_char(rec.dataresultat,'YYYY-MM-DD');
+    valoracio := valorar_idresultat(rec.idresultat);
+    
+    
+    
+    sql2 := 'SELECT * FROM  provestecnica WHERE idprovatecnica = ' || rec.idprovatecnica || ';';
+    
+    FOR rec2 IN EXECUTE(sql2) LOOP
+      prova := rec2.idprova;
+    END LOOP;
+    
+    sql3 := 'SELECT * FROM  catalegproves WHERE idprova = ' || prova|| ';';
+    
+    FOR rec2 IN EXECUTE(sql3) LOOP
+      n_prova :=rec2.nom_prova ;
+    END LOOP;
+    
+    ret := ret || '' || nom || '#' || cognom || '#' || data_res || '#' || prova || '#' || n_prova || '#' || resultat || '#' || valoracio || e' \n';
+    
+
+  END LOOP;
+
+  IF NOT trobat THEN
+    return '-8';
+  END IF;
+
 RETURN ret;
 EXCEPTION 
-	WHEN unique_violation THEN return '-1'; 
-	WHEN foreign_key_violation THEN return '-2'; 
-	WHEN not_null_violation THEN return '-3';
-	--WHEN others THEN return '-4'; 
+  WHEN unique_violation THEN return '-1'; 
+  WHEN foreign_key_violation THEN return '-2'; 
+  WHEN not_null_violation THEN return '-3';
+  --WHEN others THEN return '-4'; 
 END;
 $$
 language 'plpgsql' volatile;
@@ -388,34 +388,34 @@ RETURNS text
 AS
 $$
 DECLARE
-	sql1 text;
-	sql2 text;
-	sql3 text;
-	rec record;
-	rec2 record;
-	trobat boolean := False;
-	ret varchar :='';
-	fecha date;
-	hora time;
+  sql1 text;
+  sql2 text;
+  sql3 text;
+  rec record;
+  rec2 record;
+  trobat boolean := False;
+  ret varchar :='';
+  fecha date;
+  hora time;
   update_res varchar :='';
   insertar varchar :='';
   del varchar :='';
 BEGIN
   sql1 := 'select * from resultatsnous'; 
-	
-	FOR rec IN EXECUTE(sql1) LOOP
-		sql2 := 'select * from analitiques join provestecnica ON  analitiques.idanalitica ='|| rec.id_analitica ||' and provestecnica.idprovatecnica ='|| rec.id_provatecnica ||';';
-		
-		FOR rec2 IN EXECUTE(sql2) LOOP
-			trobat := True;
-		END LOOP;
-		
+
+  FOR rec IN EXECUTE(sql1) LOOP
+    sql2 := 'select * from analitiques join provestecnica ON  analitiques.idanalitica ='|| rec.id_analitica ||' and provestecnica.idprovatecnica ='|| rec.id_provatecnica ||';';
+    
+    FOR rec2 IN EXECUTE(sql2) LOOP
+      trobat := True;
+    END LOOP;
+    
     fecha := to_char(current_timestamp,'YYYY-MM-DD');
     hora  := to_char(current_timestamp,'HH:MM:SS');
     
-		IF NOT trobat THEN
-			ret   := ret ||fecha||'--'||hora||'--'||' error amb '||rec.id_analitica||'-'||rec.id_provatecnica||'-'||rec.resultat||e' \n';
-		ELSE
+    IF NOT trobat THEN
+      ret   := ret ||fecha||'--'||hora||'--'||' error amb '||rec.id_analitica||'-'||rec.id_provatecnica||'-'||rec.resultat||e' \n';
+    ELSE
     /* #####################################################################
    # HASTA AQUI, TANTO COMO LA PROVATECNICA COMO LA ANALITICA EXISTEN
    #####################################################################	  
@@ -449,14 +449,14 @@ BEGIN
     END IF;
     del := 'delete from resultatsNous where id_analitica ='||rec.id_analitica||' and id_provatecnica ='|| rec.id_provatecnica||' and resultat = '''||rec.resultat||''';';
     execute(del);
-	END LOOP;	
-	
+  END LOOP;	
+
 RETURN ret;
 EXCEPTION 
-	WHEN unique_violation THEN return '-1'; 
-	WHEN foreign_key_violation THEN return '-2'; 
-	WHEN not_null_violation THEN return '-3';
-	--WHEN others THEN return '-4'; 
+  WHEN unique_violation THEN return '-1'; 
+  WHEN foreign_key_violation THEN return '-2'; 
+  WHEN not_null_violation THEN return '-3';
+  --WHEN others THEN return '-4'; 
 END;
 $$
 language 'plpgsql' volatile;
