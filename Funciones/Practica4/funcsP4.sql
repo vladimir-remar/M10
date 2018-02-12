@@ -78,7 +78,106 @@ language 'plpgsql' volatile;
 CREATE OR REPLACE FUNCTION historialpacpro(
 idpacient bigint, 
 idprova bigint,
-data_inici timestamp)
+data_inici timestamp default null)
+RETURNS text
+AS
+$$
+DECLARE
+  nom varchar;
+  cognom varchar;
+  ret varchar :='';
+  sql1 text;
+  sql2 text;
+  sql3 text;
+  rec record;
+  rec2 record;
+  rec3 record;
+  minim bigint;
+  maxim bigint;
+  data_res date;
+  valoracio varchar :='';
+  valors_ref varchar:='';
+  provatecnica bigint;
+  res_char varchar :='';
+  
+BEGIN
+  IF data_inici is null Then
+    data_inici := current_timestamp;
+  END IF;
+  -- consulta base
+  -- select * from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp order by resultats.idprovatecnica,resultats.dataresultat desc;
+  -- select MIN(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp;
+  -- select Max(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp;
+  provatecnica := 0;
+  -- Resultats per aquest pacient i aquesta prova, a partit de la data_inici
+  sql2 := 'select * from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and resultats.dataresultat<= '''||data_inici||'''order by resultats.idprovatecnica,resultats.dataresultat desc;';
+  FOR rec2 in execute(sql2) LOOP
+    data_res  := to_char(rec2.dataresultat,'YYYY-MM-DD');
+    
+    IF provatecnica != rec2.idprovatecnica THEN
+      provatecnica := rec2.idprovatecnica;
+      sql1 :='select * from pacients join catalegproves on pacients.idpacient ='||idpacient ||' and catalegproves.idprova = '||idprova||' join provestecnica on provestecnica.idprova='||idprova||' and provestecnica.idprovatecnica='||provatecnica||';';
+      FOR rec in execute(sql1) LOOP
+        ret := ret|| rec.idpacient ||'+++'||rec.nom||'+++'||rec.cognoms||'+++'||rec.idprovatecnica||'+++'||rec.idprova||'+++'||rec.nom_prova|| e' \n';
+      END LOOP; 
+    END IF;
+    -- SORTIDA
+    IF rec2.resultat_numeric THEN
+      --MINIM
+      sql3 := 'select MIN(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and resultats.dataresultat<= '''||data_inici||''' and provestecnica.idprovatecnica= '||provatecnica||';';
+      FOR rec3 in execute(sql3) LOOP
+        minim := rec3.min;
+      END LOOP;
+      -- MAXIM
+      sql3 := 'select MAX(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and resultats.dataresultat<= '''||data_inici||'''and provestecnica.idprovatecnica= '||provatecnica||';';
+      FOR rec3 in execute(sql3) LOOP
+        maxim := rec3.max;
+      END LOOP;
+      -- VALORACIO
+      -- 1 ->  NORMAL 
+      -- 2 ->  PATOLÒGIC
+      -- 3 ->  PÀNIC
+      valoracio := valorar_idresultat(rec2.idresultat);
+      -- Valors de referencia
+      IF valoracio = '1' THEN
+        valors_ref :='';
+        res_char := 'NORMAL';
+      ELSEIF valoracio = '2' THEN
+        valors_ref := '('||rec2.minpat||' - '||rec2.maxpat||')';
+        res_char := 'PATOLOGIC';
+      ELSEIF valoracio = '3' THEN
+        valors_ref := '('||rec2.minpan||' - '||rec2.maxpan||')';
+        res_char := 'PANIC';
+      END IF;
+
+      IF cast(rec2.resultats as int) = maxim THEN
+        ret := ret ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MAX'|| e' \n';
+      ELSEIF cast(rec2.resultats as int) = minim THEN
+        ret := ret ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MIN'|| e' \n';
+      ELSE
+        ret := ret ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref|| e' \n';
+      END IF;
+
+    ELSE
+      --valoracio alfpat
+      valoracio := valorar_idresultat(rec2.idresultat);
+      IF valoracio = '1' THEN
+        res_char := 'NORMAL';
+      ELSE
+        res_char := 'PATOLOGIC';
+      END IF;
+      ret := ret ||data_res||'-'||provatecnica||'-'||rec2.resultats||'-'||'      '||'-'||res_char|| e' \n';
+    END IF;
+  END LOOP;
+RETURN ret;
+EXCEPTION 
+  WHEN unique_violation THEN return '-1'; 
+  WHEN foreign_key_violation THEN return '-2'; 
+  WHEN not_null_violation THEN return '-3';
+  --WHEN others THEN return '-4'; 
+END;
+$$
+language 'plpgsql' volatile;
 -- =====================================================================
 CREATE OR REPLACE FUNCTION informehistorial(
 id_pacient bigint,
@@ -94,13 +193,10 @@ DECLARE
   rec record;
   rec2 record;
   trobat boolean := False;
-  nom varchar;
-  cognom varchar;
   analitica bigint;
   id_resultat bigint;
   ret varchar :='';
-  data_res date;
-  data_analitica timestamp;
+  data_res timestamp;
   resultat varchar :='';
   valoracio varchar;
   prova int;
@@ -110,9 +206,6 @@ BEGIN
 
   FOR rec IN EXECUTE(sql1) LOOP
     trobat := True;
-    nom    := rec.nom;
-    cognom := rec.cognoms;
-    
   END LOOP;
 
   IF NOT trobat THEN
@@ -127,7 +220,7 @@ BEGIN
     FOR rec IN EXECUTE(sql1) LOOP
       trobat := True;
       analitica := rec.idanalitica;
-      data_analitica := rec.dataanalitica;
+      --data_analitica := rec.dataanalitica;
     END LOOP;
     
     IF NOT trobat THEN
@@ -155,29 +248,15 @@ BEGIN
   FOR rec IN EXECUTE(sql1) LOOP
     
     trobat    := True;
-    resultat  := rec.resultats;
     data_res  := rec.dataresultat;
-    valoracio := valorar_idresultat(rec.idresultat);
-    
-    
-    
     sql2 := 'SELECT * FROM  provestecnica WHERE idprovatecnica = ' || rec.idprovatecnica || ';';
-    
     FOR rec2 IN EXECUTE(sql2) LOOP
       prova := rec2.idprova;
     END LOOP;
     
-    --sql3 := 'SELECT * FROM  catalegproves WHERE idprova = ' || prova|| ';';
-    
-    --FOR rec2 IN EXECUTE(sql3) LOOP
-    --	n_prova :=rec2.nom_prova ;
-    --END LOOP;
-    
-    --ret := ret || '' || nom || '#' || cognom || '#' || data_res || '#' || prova || '#' || n_prova || '#' || resultat || '#' || valoracio || e' \n';
-    
-
   END LOOP;
-
+  
+  ret := ret||historialpacpro(id_pacient,prova,data_res);
   IF NOT trobat THEN
     return '-8';
   END IF;
