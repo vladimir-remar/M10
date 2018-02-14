@@ -220,7 +220,6 @@ BEGIN
     FOR rec IN EXECUTE(sql1) LOOP
       trobat := True;
       analitica := rec.idanalitica;
-      --data_analitica := rec.dataanalitica;
     END LOOP;
     
     IF NOT trobat THEN
@@ -242,25 +241,20 @@ BEGIN
    # HASTA AQUI, TANTO COMO EL PACIENTE COMO LA ANALITICA EXISTEN
    #####################################################################	
   */
+  -- select * from resultats join provestecnica on resultats.idanalitica= 2 and provestecnica.idprovatecnica=resultats.idprovatecnica;
+  -- select provestecnica.idprova,resultats.dataresultat from resultats join provestecnica on resultats.idanalitica= 12 and provestecnica.idprovatecnica=resultats.idprovatecnica group by resultats.dataresultat, provestecnica.idprova;
   trobat := False;
-  sql1 := 'SELECT * FROM  resultats WHERE idanalitica = ' || analitica || ';';
-
+  sql1 := 'select provestecnica.idprova,resultats.dataresultat from resultats join provestecnica on resultats.idanalitica= ' || analitica || ' and provestecnica.idprovatecnica=resultats.idprovatecnica group by resultats.dataresultat, provestecnica.idprova;';
+  
   FOR rec IN EXECUTE(sql1) LOOP
-    
-    trobat    := True;
-    data_res  := rec.dataresultat;
-    sql2 := 'SELECT * FROM  provestecnica WHERE idprovatecnica = ' || rec.idprovatecnica || ';';
-    
-    FOR rec2 IN EXECUTE(sql2) LOOP
-      --FALTAR VER LOS REPETIDOS
-      prova := rec2.idprova;
+    trobat := True;
+    IF prova != rec.idprova THEN
+      prova := rec.idprova;
+      data_res := rec.dataresultat;
       ret := ret||historialpacpro(id_pacient,prova,data_res);
-    END LOOP;
-     
-    --ret := ret||historialpacpro(id_pacient,prova,data_res);
+    END IF;
   END LOOP;
   
-  --ret := ret||historialpacpro(id_pacient,prova,data_res);
   IF NOT trobat THEN
     return '-8';
   END IF;
