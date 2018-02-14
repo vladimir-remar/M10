@@ -151,11 +151,11 @@ BEGIN
       END IF;
 
       IF cast(rec2.resultats as int) = maxim THEN
-        ret := ret ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MAX'|| e' \n';
+        ret := ret||rec2.idanalitica||'---' ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MAX'|| e' \n';
       ELSEIF cast(rec2.resultats as int) = minim THEN
-        ret := ret ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MIN'|| e' \n';
+        ret := ret||rec2.idanalitica||'---'||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MIN'|| e' \n';
       ELSE
-        ret := ret ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref|| e' \n';
+        ret := ret||rec2.idanalitica||'---' ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref|| e' \n';
       END IF;
 
     ELSE
@@ -166,7 +166,7 @@ BEGIN
       ELSE
         res_char := 'PATOLOGIC';
       END IF;
-      ret := ret ||data_res||'-'||provatecnica||'-'||rec2.resultats||'-'||'      '||'-'||res_char|| e' \n';
+      ret := ret||rec2.idanalitica||'---' ||data_res||'-'||provatecnica||'-'||rec2.resultats||'-'||'      '||'-'||res_char|| e' \n';
     END IF;
   END LOOP;
 RETURN ret;
@@ -199,7 +199,7 @@ DECLARE
   data_res timestamp;
   resultat varchar :='';
   valoracio varchar;
-  prova int;
+  prova int := 0;
   n_prova varchar;
 BEGIN
   sql1 := 'SELECT * FROM pacients WHERE idpacient = ' || id_pacient || ';';
@@ -250,13 +250,17 @@ BEGIN
     trobat    := True;
     data_res  := rec.dataresultat;
     sql2 := 'SELECT * FROM  provestecnica WHERE idprovatecnica = ' || rec.idprovatecnica || ';';
-    FOR rec2 IN EXECUTE(sql2) LOOP
-      prova := rec2.idprova;
-    END LOOP;
     
+    FOR rec2 IN EXECUTE(sql2) LOOP
+      --FALTAR VER LOS REPETIDOS
+      prova := rec2.idprova;
+      ret := ret||historialpacpro(id_pacient,prova,data_res);
+    END LOOP;
+     
+    --ret := ret||historialpacpro(id_pacient,prova,data_res);
   END LOOP;
   
-  ret := ret||historialpacpro(id_pacient,prova,data_res);
+  --ret := ret||historialpacpro(id_pacient,prova,data_res);
   IF NOT trobat THEN
     return '-8';
   END IF;
