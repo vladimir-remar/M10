@@ -106,13 +106,13 @@ BEGIN
   END IF;
   -- consulta base
   -- select * from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp order by resultats.idprovatecnica,resultats.dataresultat desc;
-  -- select MIN(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp;
+  -- select MIN(cast(resultats.resultats as float)),Max(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp;
   -- select Max(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp;
   provatecnica := 0;
   -- Resultats per aquest pacient i aquesta prova, a partit de la data_inici
-  sql2 := 'select * from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and resultats.dataresultat<= '''||data_inici||'''order by resultats.idprovatecnica,resultats.dataresultat desc;';
+  sql2 := 'select * from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and analitiques.dataanalitica<= '''||data_inici||'''order by resultats.idprovatecnica,analitiques.dataanalitica desc;';
   FOR rec2 in execute(sql2) LOOP
-    data_res  := to_char(rec2.dataresultat,'YYYY-MM-DD');
+    data_res  := to_char(rec2.dataanalitica,'YYYY-MM-DD');
     
     IF provatecnica != rec2.idprovatecnica THEN
       provatecnica := rec2.idprovatecnica;
@@ -123,14 +123,10 @@ BEGIN
     END IF;
     -- SORTIDA
     IF rec2.resultat_numeric THEN
-      --MINIM
-      sql3 := 'select MIN(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and resultats.dataresultat<= '''||data_inici||''' and provestecnica.idprovatecnica= '||provatecnica||';';
+      --MINIM and Maxim
+      sql3 := 'select MIN(cast(resultats.resultats as float)),MAX(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and analitiques.dataanalitica<= '''||data_inici||''' and provestecnica.idprovatecnica= '||provatecnica||';';
       FOR rec3 in execute(sql3) LOOP
         minim := rec3.min;
-      END LOOP;
-      -- MAXIM
-      sql3 := 'select MAX(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and resultats.dataresultat<= '''||data_inici||'''and provestecnica.idprovatecnica= '||provatecnica||';';
-      FOR rec3 in execute(sql3) LOOP
         maxim := rec3.max;
       END LOOP;
       -- VALORACIO
@@ -197,7 +193,7 @@ DECLARE
   analitica bigint;
   id_resultat bigint;
   ret varchar :='';
-  data_res timestamp;
+  data_analitica timestamp;
   resultat varchar :='';
   valoracio varchar;
   prova int := 0;
@@ -231,6 +227,7 @@ BEGIN
     FOR rec IN EXECUTE(sql1) LOOP
       trobat := True;
       analitica := rec.idanalitica;	
+      data_analitica := rec.dataanalitica;	
     END LOOP;
     
     IF NOT trobat THEN
@@ -245,14 +242,13 @@ BEGIN
   -- select * from resultats join provestecnica on resultats.idanalitica= 2 and provestecnica.idprovatecnica=resultats.idprovatecnica;
   -- select provestecnica.idprova,resultats.dataresultat from resultats join provestecnica on resultats.idanalitica= 12 and provestecnica.idprovatecnica=resultats.idprovatecnica group by resultats.dataresultat, provestecnica.idprova;
   trobat := False;
-  sql1 := 'select provestecnica.idprova,resultats.dataresultat from resultats join provestecnica on resultats.idanalitica= ' || analitica || ' and provestecnica.idprovatecnica=resultats.idprovatecnica group by resultats.dataresultat, provestecnica.idprova;';
+  sql1 := 'select provestecnica.idprova from resultats join provestecnica on resultats.idanalitica= ' || analitica || ' and provestecnica.idprovatecnica=resultats.idprovatecnica group by provestecnica.idprova;';
   
   FOR rec IN EXECUTE(sql1) LOOP
     trobat := True;
     IF prova != rec.idprova THEN
       prova := rec.idprova;
-      data_res := rec.dataresultat;
-      ret := ret||historialpacpro(id_pacient,prova,data_res);
+      ret := ret||historialpacpro(id_pacient,prova,data_analitica);
     END IF;
   END LOOP;
   

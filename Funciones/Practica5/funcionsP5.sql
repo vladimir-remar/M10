@@ -1,0 +1,3 @@
+--resultats.idprovatecnica
+-- modificar primary key provestecnica
+  -- idprovatecnica sexe edat_inicial edat_final
