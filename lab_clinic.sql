@@ -150,25 +150,49 @@ CREATE FUNCTION determina_resultat(idprovatecnica bigint, idpacient bigint, resu
     AS $$
 DECLARE
   sql1 varchar := '';
-  existe varchar;
-  ret varchar;
+  sql2 varchar := '';
+  ret varchar :='';
   rec record;
+  trobat boolean := False;
+  edat int;
+  sexe int;
   min_pat float;
   max_pat float;
   min_pan float;
   max_pan float;
   res_numeric float;
-  trobat boolean := False;
 BEGIN
-  sql1 := 'SELECT idpacient FROM pacients WHERE idpacient = ' || idpacient || ';';
-  execute (sql1) into existe;
-
-  IF existe is NULL THEN
-    return '-5';
+  sql1 := 'SELECT * FROM pacients WHERE idpacient = ' || idpacient || ';';
+  FOR rec IN EXECUTE(sql1) LOOP
+    trobat:= True;
+    IF rec.data_naix is NULL OR rec.sexe is NULL THEN
+      return '2';
+    ELSE
+      sql2 := 'select to_char(age(timestamp '''||rec.data_naix||'''), '''||'YY'||''');';
+      EXECUTE (sql2) INTO edat;
+      IF rec.sexe = 'M' THEN
+        sexe = 1;
+      ELSE
+        sexe = 2;
+      END IF;
+    END IF;
+  END LOOP;
+  
+  IF NOT trobat THEN
+    return '2';
   END IF;
-
-  trobat := false;
-  sql1 := 'SELECT * FROM  provestecnica WHERE idprovatecnica = ' || idprovatecnica || ';';
+  
+  trobat:= False;
+  sql1 := 'select * from provestecnica where idprovatecnica='||idprovatecnica||' and sexe ='||sexe||';';
+  FOR rec IN EXECUTE(sql1) LOOP
+    trobat :=True;
+  END LOOP;
+  
+  IF NOT trobat THEN
+    sexe=0;
+  END IF;
+  
+  sql1 := 'select * from provestecnica where idprovatecnica='||idprovatecnica||' and sexe='||sexe||' and '||edat||' between edat_inicial and edat_final and edat_final >'||edat||' ;';
   FOR rec IN EXECUTE(sql1) LOOP
     trobat := true;
     IF rec.resultat_numeric then
@@ -204,9 +228,9 @@ BEGIN
   END LOOP;
 
   if not trobat then
-    return '-6';
-  end if;		
-
+    return '-5';
+  end if;
+  
 RETURN ret;
 EXCEPTION 
   WHEN unique_violation THEN return '-1'; 
@@ -474,13 +498,13 @@ BEGIN
   END IF;
   -- consulta base
   -- select * from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp order by resultats.idprovatecnica,resultats.dataresultat desc;
-  -- select MIN(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp;
+  -- select MIN(cast(resultats.resultats as float)),Max(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp;
   -- select Max(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp;
   provatecnica := 0;
   -- Resultats per aquest pacient i aquesta prova, a partit de la data_inici
-  sql2 := 'select * from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and resultats.dataresultat<= '''||data_inici||'''order by resultats.idprovatecnica,resultats.dataresultat desc;';
+  sql2 := 'select * from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and analitiques.dataanalitica<= '''||data_inici||'''order by resultats.idprovatecnica,analitiques.dataanalitica desc;';
   FOR rec2 in execute(sql2) LOOP
-    data_res  := to_char(rec2.dataresultat,'YYYY-MM-DD');
+    data_res  := to_char(rec2.dataanalitica,'YYYY-MM-DD');
     
     IF provatecnica != rec2.idprovatecnica THEN
       provatecnica := rec2.idprovatecnica;
@@ -491,14 +515,10 @@ BEGIN
     END IF;
     -- SORTIDA
     IF rec2.resultat_numeric THEN
-      --MINIM
-      sql3 := 'select MIN(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and resultats.dataresultat<= '''||data_inici||''' and provestecnica.idprovatecnica= '||provatecnica||';';
+      --MINIM and Maxim
+      sql3 := 'select MIN(cast(resultats.resultats as float)),MAX(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and analitiques.dataanalitica<= '''||data_inici||''' and provestecnica.idprovatecnica= '||provatecnica||';';
       FOR rec3 in execute(sql3) LOOP
         minim := rec3.min;
-      END LOOP;
-      -- MAXIM
-      sql3 := 'select MAX(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and resultats.dataresultat<= '''||data_inici||'''and provestecnica.idprovatecnica= '||provatecnica||';';
-      FOR rec3 in execute(sql3) LOOP
         maxim := rec3.max;
       END LOOP;
       -- VALORACIO
@@ -519,21 +539,22 @@ BEGIN
       END IF;
 
       IF cast(rec2.resultats as int) = maxim THEN
-        ret := ret ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MAX'|| e' \n';
+        ret := ret||rec2.idanalitica||'---' ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MAX'|| e' \n';
       ELSEIF cast(rec2.resultats as int) = minim THEN
-        ret := ret ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MIN'|| e' \n';
+        ret := ret||rec2.idanalitica||'---'||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MIN'|| e' \n';
       ELSE
-        ret := ret ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref|| e' \n';
+        ret := ret||rec2.idanalitica||'---' ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref|| e' \n';
       END IF;
 
     ELSE
+      --valoracio alfpat
       valoracio := valorar_idresultat(rec2.idresultat);
       IF valoracio = '1' THEN
         res_char := 'NORMAL';
       ELSE
         res_char := 'PATOLOGIC';
       END IF;
-      ret := ret ||data_res||'-'||provatecnica||'-'||rec2.resultats||'-'||'      '||'-'||res_char|| e' \n';
+      ret := ret||rec2.idanalitica||'---' ||data_res||'-'||provatecnica||'-'||rec2.resultats||'-'||'      '||'-'||res_char|| e' \n';
     END IF;
   END LOOP;
 RETURN ret;
@@ -565,10 +586,10 @@ DECLARE
   analitica bigint;
   id_resultat bigint;
   ret varchar :='';
-  data_res timestamp;
+  data_analitica timestamp;
   resultat varchar :='';
   valoracio varchar;
-  prova int;
+  prova int := 0;
   n_prova varchar;
 BEGIN
   sql1 := 'SELECT * FROM pacients WHERE idpacient = ' || id_pacient || ';';
@@ -589,7 +610,6 @@ BEGIN
     FOR rec IN EXECUTE(sql1) LOOP
       trobat := True;
       analitica := rec.idanalitica;
-      --data_analitica := rec.dataanalitica;
     END LOOP;
     
     IF NOT trobat THEN
@@ -600,6 +620,7 @@ BEGIN
     FOR rec IN EXECUTE(sql1) LOOP
       trobat := True;
       analitica := rec.idanalitica;	
+      data_analitica := rec.dataanalitica;	
     END LOOP;
     
     IF NOT trobat THEN
@@ -611,21 +632,19 @@ BEGIN
    # HASTA AQUI, TANTO COMO EL PACIENTE COMO LA ANALITICA EXISTEN
    #####################################################################	
   */
+  -- select * from resultats join provestecnica on resultats.idanalitica= 2 and provestecnica.idprovatecnica=resultats.idprovatecnica;
+  -- select provestecnica.idprova,resultats.dataresultat from resultats join provestecnica on resultats.idanalitica= 12 and provestecnica.idprovatecnica=resultats.idprovatecnica group by resultats.dataresultat, provestecnica.idprova;
   trobat := False;
-  sql1 := 'SELECT * FROM  resultats WHERE idanalitica = ' || analitica || ';';
-
+  sql1 := 'select provestecnica.idprova from resultats join provestecnica on resultats.idanalitica= ' || analitica || ' and provestecnica.idprovatecnica=resultats.idprovatecnica group by provestecnica.idprova;';
+  
   FOR rec IN EXECUTE(sql1) LOOP
-    
-    trobat    := True;
-    data_res  := rec.dataresultat;
-    sql2 := 'SELECT * FROM  provestecnica WHERE idprovatecnica = ' || rec.idprovatecnica || ';';
-    FOR rec2 IN EXECUTE(sql2) LOOP
-      prova := rec2.idprova;
-    END LOOP;
-    
+    trobat := True;
+    IF prova != rec.idprova THEN
+      prova := rec.idprova;
+      ret := ret||historialpacpro(id_pacient,prova,data_analitica);
+    END IF;
   END LOOP;
   
-  ret := ret||historialpacpro(id_pacient,prova,data_res);
   IF NOT trobat THEN
     return '-8';
   END IF;
@@ -1300,8 +1319,8 @@ CREATE TABLE pacients (
     nom character varying(15) NOT NULL,
     cognoms character varying(30) NOT NULL,
     dni character varying(9),
-    data_naix date NOT NULL,
-    sexe character varying(1) NOT NULL,
+    data_naix date,
+    sexe character varying(1),
     adreca character varying(20) NOT NULL,
     ciutat character varying(30) NOT NULL,
     c_postal character varying(10) NOT NULL,
@@ -1368,14 +1387,16 @@ ALTER TABLE pacients_nous OWNER TO isx48262276;
 CREATE TABLE provestecnica (
     idprovatecnica integer NOT NULL,
     idprova integer,
-    sexe character varying(1) NOT NULL,
     dataprova timestamp without time zone NOT NULL,
     resultat_numeric boolean DEFAULT true NOT NULL,
     minpat double precision,
     maxpat double precision,
     minpan double precision,
     maxpan double precision,
-    alfpat character varying(10)
+    alfpat character varying(10),
+    sexe integer NOT NULL,
+    edat_inicial integer NOT NULL,
+    edat_final integer NOT NULL
 );
 
 
@@ -1601,14 +1622,22 @@ COPY pacients_nous (nom, cognoms, dni, data_naix, sexe, adreca, ciutat, c_postal
 -- Data for Name: provestecnica; Type: TABLE DATA; Schema: public; Owner: isx48262276
 --
 
-COPY provestecnica (idprovatecnica, idprova, sexe, dataprova, resultat_numeric, minpat, maxpat, minpan, maxpan, alfpat) FROM stdin;
-1	101	M	2018-01-18 08:01:32.456359	t	80	100	60	150	\N
-2	101	F	2018-01-18 08:01:32.456988	t	70	90	50	110	\N
-3	101	M	2017-11-01 00:00:00	t	111	150	80	170	\N
-5	303	A	2018-02-01 11:24:52.629639	f	\N	\N	\N	\N	POS
-6	202	M	2018-02-07 09:37:53.510512	t	50	75	35	90	\N
-7	202	F	2018-02-07 09:38:51.512237	t	80	110	75	120	\N
-8	303	F	2018-02-07 09:47:28.103917	f	\N	\N	\N	\N	NEG
+COPY provestecnica (idprovatecnica, idprova, dataprova, resultat_numeric, minpat, maxpat, minpan, maxpan, alfpat, sexe, edat_inicial, edat_final) FROM stdin;
+6	202	2018-02-07 09:37:53.510512	t	50	75	35	90	\N	1	0	4
+2	101	2018-01-18 08:01:32.456988	t	70	90	50	110	\N	2	4	99
+3	101	2017-11-01 00:00:00	t	111	150	80	170	\N	0	0	999
+5	303	2018-02-01 11:24:52.629639	f	\N	\N	\N	\N	POS	0	0	999
+8	303	2018-02-07 09:47:28.103917	f	\N	\N	\N	\N	NEG	0	0	999
+7	202	2018-02-07 09:38:51.512237	t	80	110	75	120	\N	2	4	99
+9	101	2018-02-17 10:32:13.964535	t	90	115	65	130		2	1	4
+1	101	2018-02-17 11:35:37.422756	t	77	99	55	101		1	4	99
+1	101	2018-02-17 11:35:53.510736	t	77	99	55	101		0	0	999
+6	101	2018-02-17 11:37:22.189084	t	33	66	22	77		0	0	999
+1	101	2018-02-17 11:38:23.403369	t	111	168	99	180		2	4	99
+1	101	2018-01-18 08:01:32.456359	t	80	100	60	150	\N	1	0	1
+1	101	2018-02-17 11:38:53.067475	t	122	177	100	200		2	0	1
+1	101	2018-02-17 11:42:13.080467	t	67	77	50	90		1	1	4
+1	101	2018-02-17 11:42:36.888897	t	83	97	61	101		2	1	4
 \.
 
 
@@ -1616,7 +1645,7 @@ COPY provestecnica (idprovatecnica, idprova, sexe, dataprova, resultat_numeric, 
 -- Name: provestecnica_idprovatecnica_seq; Type: SEQUENCE SET; Schema: public; Owner: isx48262276
 --
 
-SELECT pg_catalog.setval('provestecnica_idprovatecnica_seq', 8, true);
+SELECT pg_catalog.setval('provestecnica_idprovatecnica_seq', 9, true);
 
 
 --
@@ -1636,6 +1665,12 @@ COPY resultats (idresultat, idanalitica, idprovatecnica, resultats, dataresultat
 20	13	1	34	2018-02-12 12:06:55.259746
 21	14	1	125	2018-02-12 12:07:03.156021
 19	12	3	112	2018-02-12 12:06:42.124315
+22	11	6	50	2018-02-14 14:43:07.607756
+23	11	7	150	2018-02-14 14:43:24.223375
+24	12	7	117	2018-02-14 14:43:34.223156
+25	12	6	17	2018-02-14 14:43:56.09782
+26	1	6	27	2018-02-14 14:44:06.926983
+27	1	7	88	2018-02-14 14:44:17.12673
 \.
 
 
@@ -1643,7 +1678,7 @@ COPY resultats (idresultat, idanalitica, idprovatecnica, resultats, dataresultat
 -- Name: resultats_idresultat_seq; Type: SEQUENCE SET; Schema: public; Owner: isx48262276
 --
 
-SELECT pg_catalog.setval('resultats_idresultat_seq', 21, true);
+SELECT pg_catalog.setval('resultats_idresultat_seq', 27, true);
 
 
 --
@@ -1699,7 +1734,7 @@ ALTER TABLE ONLY pacients
 --
 
 ALTER TABLE ONLY provestecnica
-    ADD CONSTRAINT provestecnica_pkey PRIMARY KEY (idprovatecnica);
+    ADD CONSTRAINT provestecnica_pkey PRIMARY KEY (idprovatecnica, sexe, edat_inicial, edat_final);
 
 
 --
@@ -1748,14 +1783,6 @@ ALTER TABLE ONLY analitiques
 
 ALTER TABLE ONLY provestecnica
     ADD CONSTRAINT fk_idprova FOREIGN KEY (idprova) REFERENCES catalegproves(idprova) ON UPDATE CASCADE;
-
-
---
--- Name: fk_idprovatecnica; Type: FK CONSTRAINT; Schema: public; Owner: isx48262276
---
-
-ALTER TABLE ONLY resultats
-    ADD CONSTRAINT fk_idprovatecnica FOREIGN KEY (idprovatecnica) REFERENCES provestecnica(idprovatecnica) ON UPDATE CASCADE;
 
 
 --
