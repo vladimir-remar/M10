@@ -20,7 +20,8 @@ F=2
 CREATE OR REPLACE FUNCTION determina_resultat(
 idprovatecnica bigint,
 idpacient bigint,
-resultat varchar)
+resultat varchar,
+fecha_analitica timestamp default current_timestamp)
 
 RETURNS text
 AS
@@ -45,7 +46,8 @@ BEGIN
     IF rec.data_naix is NULL OR rec.sexe is NULL THEN
       return '2';
     ELSE
-      sql2 := 'select to_char(age(timestamp '''||rec.data_naix||'''), '''||'YY'||''');';
+      sql2 := 'select to_char(age('''||fecha_analitica||''','''||rec.data_naix||'''), '''||'YY'||''');';
+      --sql2 := 'select to_char(age(timestamp '''||rec.data_naix||'''), '''||'YY'||''');';
       EXECUTE (sql2) INTO edat;
       IF rec.sexe = 'M' THEN
         sexe = 1;
@@ -114,6 +116,63 @@ EXCEPTION
   WHEN foreign_key_violation THEN return '-2'; 
   WHEN not_null_violation THEN return '-3';
   WHEN others THEN return '-4'; 
+END;
+$$
+language 'plpgsql' volatile;
+-- =====================================================================
+
+CREATE OR REPLACE FUNCTION valorar_idresultat(id_resultat bigint)
+RETURNS text
+AS
+$$
+DECLARE
+	sql1 text;
+	ret varchar :='';
+	id_provatecnica bigint;
+	id_analitica bigint;
+	id_pacient bigint;
+	res varchar;
+	rec record;
+  data_analitica timestamp;
+	trobat boolean :=false;
+BEGIN
+	sql1 := 'SELECT * FROM  resultats WHERE idresultat = ' || id_resultat || ';';
+	
+	trobat := false;
+	FOR rec IN EXECUTE(sql1) LOOP
+		trobat          := true;
+		id_provatecnica := rec.idprovatecnica;
+		id_analitica    := rec.idanalitica;
+		res             := rec.resultats;
+    
+	END LOOP;
+	
+	IF NOT trobat THEN
+		return '-5';
+	END IF;	
+	
+	sql1 := 'SELECT idpacient FROM analitiques WHERE idanalitica = ' || id_analitica || ';';
+	
+	trobat := False;	
+	FOR rec IN EXECUTE(sql1) LOOP
+		trobat := True;
+		id_pacient := rec.idpacient;
+    data_analitica := rec.dataanalitica;
+	END LOOP;
+	
+	IF NOT trobat THEN
+		return '-6';
+	END IF;
+	
+	ret := determina_resultat(id_provatecnica,id_pacient,res,data_analitica);
+	
+RETURN ret;
+	
+EXCEPTION 
+	WHEN unique_violation THEN return '-1'; 
+	WHEN foreign_key_violation THEN return '-2'; 
+	WHEN not_null_violation THEN return '-3';
+	WHEN others THEN return '-4'; 
 END;
 $$
 language 'plpgsql' volatile;

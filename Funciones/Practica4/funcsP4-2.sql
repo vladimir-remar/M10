@@ -105,15 +105,16 @@ BEGIN
     data_inici := current_timestamp;
   END IF;
   -- consulta base
+  -- select resultats.idresultat, resultats.resultats  from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp group by resultats.idresultat, resultats.resultats,resultats.idprovatecnica order by resultats.idprovatecnica,resultats.dataresultat desc;
   -- select * from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp order by resultats.idprovatecnica,resultats.dataresultat desc;
   -- select MIN(cast(resultats.resultats as float)),Max(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp;
   -- select Max(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp;
   provatecnica := 0;
   -- Resultats per aquest pacient i aquesta prova, a partit de la data_inici
-  sql2 := 'select * from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and analitiques.dataanalitica<= '''||data_inici||'''order by resultats.idprovatecnica,analitiques.dataanalitica desc;';
+  sql2 := 'select resultats.idresultat, resultats.resultats, analitiques.dataanalitica, provestecnica.idprovatecnica, provestecnica.resultat_numeric,resultats.idanalitica from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and analitiques.dataanalitica<= '''||data_inici||'''group by resultats.idresultat, resultats.resultats,analitiques.dataanalitica, provestecnica.idprovatecnica, provestecnica.resultat_numeric,resultats.idanalitica, resultats.idprovatecnica order by resultats.idprovatecnica,analitiques.dataanalitica desc;';
   FOR rec2 in execute(sql2) LOOP
     data_res  := to_char(rec2.dataanalitica,'YYYY-MM-DD');
-    
+    -- Falta modificar las capceleras
     IF provatecnica != rec2.idprovatecnica THEN
       provatecnica := rec2.idprovatecnica;
       sql1 :='select * from pacients join catalegproves on pacients.idpacient ='||idpacient ||' and catalegproves.idprova = '||idprova||' join provestecnica on provestecnica.idprova='||idprova||' and provestecnica.idprovatecnica='||provatecnica||';';
