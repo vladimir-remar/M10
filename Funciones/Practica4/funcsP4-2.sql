@@ -117,7 +117,7 @@ BEGIN
     -- Falta modificar las capceleras
     IF provatecnica != rec2.idprovatecnica THEN
       provatecnica := rec2.idprovatecnica;
-      sql1 :='select * from pacients join catalegproves on pacients.idpacient ='||idpacient ||' and catalegproves.idprova = '||idprova||' join provestecnica on provestecnica.idprova='||idprova||' and provestecnica.idprovatecnica='||provatecnica||';';
+      sql1 :='select pacients.nom,pacients.cognoms,provestecnica.idprovatecnica,pacients.idpacient,catalegproves.idprova,catalegproves.nom_prova from pacients join catalegproves on pacients.idpacient ='||idpacient ||' and catalegproves.idprova = '||idprova||' join provestecnica on provestecnica.idprova='||idprova||' and provestecnica.idprovatecnica='||provatecnica||' group by provestecnica.idprovatecnica,pacients.nom,pacients.idpacient,pacients.cognoms,provestecnica.idprovatecnica,catalegproves.idprova,catalegproves.nom_prova;';
       FOR rec in execute(sql1) LOOP
         ret := ret|| rec.idpacient ||'+++'||rec.nom||'+++'||rec.cognoms||'+++'||rec.idprovatecnica||'+++'||rec.idprova||'+++'||rec.nom_prova|| e' \n';
       END LOOP; 
