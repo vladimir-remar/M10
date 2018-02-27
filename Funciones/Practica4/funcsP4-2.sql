@@ -111,8 +111,9 @@ BEGIN
   -- select Max(cast(resultats.resultats as float)) from provestecnica join resultats  on provestecnica.idprova = 101 and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient=1 and resultats.dataresultat<=current_timestamp;
   provatecnica := 0;
   -- Resultats per aquest pacient i aquesta prova, a partit de la data_inici
-  sql2 := 'select resultats.idresultat, resultats.resultats, analitiques.dataanalitica, provestecnica.idprovatecnica, provestecnica.resultat_numeric,resultats.idanalitica from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and analitiques.dataanalitica<= '''||data_inici||'''group by resultats.idresultat, resultats.resultats,analitiques.dataanalitica, provestecnica.idprovatecnica, provestecnica.resultat_numeric,resultats.idanalitica, resultats.idprovatecnica order by resultats.idprovatecnica,analitiques.dataanalitica desc;';
+  sql2 := 'select resultats.idresultat, resultats.resultats, analitiques.dataanalitica, provestecnica.idprovatecnica, provestecnica.resultat_numeric,resultats.idanalitica,provestecnica.minpat,provestecnica.maxpat, provestecnica.minpan, provestecnica.maxpan from provestecnica join resultats  on provestecnica.idprova ='|| idprova ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join analitiques on resultats.idanalitica=analitiques.idanalitica and analitiques.idpacient='||idpacient||' and analitiques.dataanalitica<= '''||data_inici||'''group by resultats.idresultat, resultats.resultats,analitiques.dataanalitica, provestecnica.idprovatecnica, provestecnica.resultat_numeric,resultats.idanalitica,provestecnica.minpat,provestecnica.maxpat,provestecnica.minpan,provestecnica.maxpan,resultats.idprovatecnica order by resultats.idprovatecnica,analitiques.dataanalitica desc;';
   FOR rec2 in execute(sql2) LOOP
+    
     data_res  := to_char(rec2.dataanalitica,'YYYY-MM-DD');
     -- Falta modificar las capceleras
     IF provatecnica != rec2.idprovatecnica THEN
@@ -146,7 +147,7 @@ BEGIN
         valors_ref := '('||rec2.minpan||' - '||rec2.maxpan||')';
         res_char := 'PANIC';
       END IF;
-
+      raise notice '%',valors_ref;
       IF cast(rec2.resultats as int) = maxim THEN
         ret := ret||rec2.idanalitica||'---' ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MAX'|| e' \n';
       ELSEIF cast(rec2.resultats as int) = minim THEN
@@ -224,7 +225,7 @@ BEGIN
       return '-6';
     END IF;
   ELSE
-    sql1 := 'SELECT idanalitica FROM analitiques WHERE idpacient = ' || id_pacient || ' order by dataanalitica desc limit 1;';
+    sql1 := 'SELECT idanalitica,dataanalitica FROM analitiques WHERE idpacient = ' || id_pacient || ' order by dataanalitica desc limit 1;';
     FOR rec IN EXECUTE(sql1) LOOP
       trobat := True;
       analitica := rec.idanalitica;	
