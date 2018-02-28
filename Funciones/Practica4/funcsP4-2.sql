@@ -1,3 +1,5 @@
+-- #####################################################################
+/*
 CREATE OR REPLACE FUNCTION determina_resultat(
 idprovatecnica bigint,
 idpacient bigint,
@@ -73,7 +75,7 @@ EXCEPTION
   WHEN others THEN return '-4'; 
 END;
 $$
-language 'plpgsql' volatile;
+language 'plpgsql' volatile;*/
 -- =====================================================================
 CREATE OR REPLACE FUNCTION historialpacpro(
 idpacient bigint, 
@@ -89,6 +91,7 @@ DECLARE
   sql1 text;
   sql2 text;
   sql3 text;
+  sql4 text;
   rec record;
   rec2 record;
   rec3 record;
@@ -99,7 +102,11 @@ DECLARE
   valors_ref varchar:='';
   provatecnica bigint;
   res_char varchar :='';
-  
+  selec_valors text;
+  minpat varchar :='';
+  maxpat varchar :='';
+  minpan varchar :='';
+  maxpan varchar :='';
 BEGIN
   IF data_inici is null Then
     data_inici := current_timestamp;
@@ -138,18 +145,28 @@ BEGIN
       valoracio := valorar_idresultat(rec2.idresultat);
       
       -- Valors de referencia
+      raise notice '%',valoracio;
+      selec_valors := valors_referencia(provatecnica,idpacient,data_res);
       IF valoracio = '1' THEN
         valors_ref :='';
         res_char := 'NORMAL';
       ELSEIF valoracio = '2' THEN
-        valors_ref := '('||rec2.minpat||' - '||rec2.maxpat||')';
+        sql4 := 'select split_part('''||selec_valors||''',''-'',1);';
+        EXECUTE (sql4) INTO minpat;
+        raise notice '%',minpat;
+        sql4 := 'select split_part('''||selec_valors||''',''-'',2);';
+        EXECUTE (sql4) INTO maxpat;
+        valors_ref := '('||minpat||' - '||maxpat||')';
         res_char := 'PATOLOGIC';
       ELSEIF valoracio = '3' THEN
-        valors_ref := '('||rec2.minpan||' - '||rec2.maxpan||')';
+        sql4 := 'select split_part('''||selec_valors||''',''-'',3);';
+        EXECUTE (sql4) INTO minpan;
+        sql4 := 'select split_part('''||selec_valors||''',''-'',4);';
+        EXECUTE (sql4) INTO maxpan;
+        valors_ref := '('||minpan||' - '||maxpan||')';
         res_char := 'PANIC';
       END IF;
       
-      raise notice '%',valors_ref;
       IF cast(rec2.resultats as int) = maxim THEN
         ret := ret||rec2.idanalitica||'---' ||data_res||' --- '||provatecnica||'---'||rec2.resultats||'-'||'      '||'-'||res_char||' -'||valors_ref||' -MAX'|| e' \n';
       ELSEIF cast(rec2.resultats as int) = minim THEN

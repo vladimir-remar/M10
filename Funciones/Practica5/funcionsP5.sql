@@ -143,15 +143,14 @@ BEGIN
 		trobat          := true;
 		id_provatecnica := rec.idprovatecnica;
 		id_analitica    := rec.idanalitica;
-		res             := rec.resultats;
-    
+    res := rec.resultats;
 	END LOOP;
 	
 	IF NOT trobat THEN
 		return '-5';
 	END IF;	
 	
-	sql1 := 'SELECT idpacient FROM analitiques WHERE idanalitica = ' || id_analitica || ';';
+	sql1 := 'SELECT * FROM analitiques WHERE idanalitica = ' || id_analitica || ';';
 	
 	trobat := False;	
 	FOR rec IN EXECUTE(sql1) LOOP
@@ -172,7 +171,75 @@ EXCEPTION
 	WHEN unique_violation THEN return '-1'; 
 	WHEN foreign_key_violation THEN return '-2'; 
 	WHEN not_null_violation THEN return '-3';
-	WHEN others THEN return '-4'; 
+	--WHEN others THEN return '-4'; 
+END;
+$$
+language 'plpgsql' volatile;
+
+-- #####################################################################
+-- Funcio valors ref
+
+CREATE OR REPLACE FUNCTION valors_referencia(
+idprovatecnica bigint,
+idpacient bigint,
+fecha_analitica timestamp default current_timestamp)
+RETURNS text
+AS
+$$
+DECLARE
+  sql1 text;
+  sql2 text;
+  sexe int;
+  edat int;
+  trobat boolean := False;
+  rec record;
+  ret varchar:='';
+BEGIN
+  sql1 := 'SELECT * FROM pacients WHERE idpacient = ' || idpacient || ';';
+    FOR rec IN EXECUTE(sql1) LOOP
+      trobat:= True;
+      IF rec.data_naix is NULL OR rec.sexe is NULL THEN
+        return '2';
+      ELSE
+        sql2 := 'select to_char(age('''||fecha_analitica||''','''||rec.data_naix||'''), '''||'YY'||''');';
+        --sql2 := 'select to_char(age(timestamp '''||rec.data_naix||'''), '''||'YY'||''');';
+        EXECUTE (sql2) INTO edat;
+        IF rec.sexe = 'M' THEN
+          sexe = 1;
+        ELSE
+          sexe = 2;
+        END IF;
+      END IF;
+    END LOOP;
+    
+    IF NOT trobat THEN
+      return '2';
+    END IF;
+    
+    trobat:= False;
+    sql1 := 'select * from provestecnica where idprovatecnica='||idprovatecnica||' and sexe ='||sexe||';';
+    FOR rec IN EXECUTE(sql1) LOOP
+      trobat :=True;
+    END LOOP;
+    
+    IF NOT trobat THEN
+      sexe=0;
+    END IF;
+    
+    sql1 := 'select * from provestecnica where idprovatecnica='||idprovatecnica||' and sexe='||sexe||' and '||edat||' between edat_inicial and edat_final and edat_final >'||edat||' ;';
+    FOR rec IN EXECUTE(sql1) LOOP
+      trobat := true;
+      IF rec.resultat_numeric then
+        ret :=ret || rec.minpat||'-'||rec.maxpat||'-'||rec.minpan||'-'||rec.maxpan;
+      END IF;
+    END LOOP;
+    
+RETURN ret;
+EXCEPTION 
+  WHEN unique_violation THEN return '-1'; 
+  WHEN foreign_key_violation THEN return '-2'; 
+  WHEN not_null_violation THEN return '-3';
+  --WHEN others THEN return '-4'; 
 END;
 $$
 language 'plpgsql' volatile;
