@@ -37,7 +37,7 @@ END;
 $resultats_resultat$ 
 LANGUAGE plpgsql;
 
-CREATE TRIGGER resultats_resultat BEFORE INSERT OR UPDATE ON resultats
+CREATE TRIGGER resultats_resultat AFTER INSERT OR UPDATE ON resultats
     FOR EACH ROW EXECUTE PROCEDURE estat_resultat();
 -- #####################################################################
 /*
@@ -70,7 +70,10 @@ informes:
 CREATE TABLE informes( 
 idanalitica bigint NOT NULL,
 stamp timestamp NOT NULL); 
-alter table informes add constraint fk_idanalitica foreign key (idanalitica) references analitiques(idanalitica) on update cascade on delete restrict;
+
+alter table informes add constraint fk_idanalitica foreign key 
+(idanalitica) references analitiques(idanalitica) on update cascade on 
+delete restrict;
 alter table resultats alter COLUMN resultats drop not null ;
 */
 
