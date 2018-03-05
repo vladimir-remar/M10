@@ -172,6 +172,7 @@ BEGIN
   sql1 := 'select * from resultats join provestecnica on resultats.idresultat='|| new.idresultat ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join catalegproves on provestecnica.idprova=catalegproves.idprova and catalegproves.alarma=1; ';
   FOR rec IN EXECUTE(sql1) LOOP
     trobat := True;
+    --Que datos guardamos en la tabla Alarmas
   END LOOP;
   
   IF trobat THEN
