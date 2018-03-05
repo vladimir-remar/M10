@@ -160,3 +160,27 @@ les funcions que calgui per guardar les alarmes.
 --UPDATE catalegproves SET alarma=1 WHERE acronim = 'EBO';
 --UPDATE catalegproves SET alarma=1 WHERE acronim = 'COAC';
 --UPDATE catalegproves SET alarma=0 WHERE acronim != 'EBO' AND acronim != 'VIH' AND acronim != 'COAC'
+
+CREATE OR REPLACE FUNCTION insert_alarmes() RETURNS trigger 
+AS $entry_alarma$
+DECLARE
+  sql1 text;
+  rec record;
+  trobat boolean := False;
+BEGIN
+  --select * from resultats join provestecnica on resultats.idresultat=1 and resultats.idprovatecnica=provestecnica.idprovatecnica join catalegproves on provestecnica.idprova=catalegproves.idprova and catalegproves.alarma=1;
+  sql1 := 'select * from resultats join provestecnica on resultats.idresultat='|| new.idresultat ||' and resultats.idprovatecnica=provestecnica.idprovatecnica join catalegproves on provestecnica.idprova=catalegproves.idprova and catalegproves.alarma=1; ';
+  FOR rec IN EXECUTE(sql1) LOOP
+    trobat := True;
+  END LOOP;
+  
+  IF trobat THEN
+    INSERT INTO alarmes VALUES(default,new.idresultat,);
+  END IF;
+RETURN NEW;
+END;
+$entry_alarma$ 
+LANGUAGE plpgsql;
+
+CREATE TRIGGER entry_alarma AFTER INSERT OR UPDATE ON resultats_patologics
+	FOR EACH ROW EXECUTE PROCEDURE insert_alarmes();
