@@ -112,7 +112,7 @@ BEGIN
     END IF;
   
   ELSEIF TG_TABLE_NAME = 'resultats_patologics' THEN
-    sql1 := 'select * from resultats_patologics join resultats on resultats_patologics.idresultat=resultats.idresultat where idanalitica in (select idanalitica from resultats where idresultat = '||old.idresultat||') ;';
+    sql1 := 'select * from resultats_patologics join resultats on resultats_patologics.idresultat=resultats.idresultat and idanalitica in (select idanalitica from resultats where idresultat = '||old.idresultat||') ;';
     FOR rec IN EXECUTE(sql1) LOOP
       trobat :=True;
     END LOOP;
