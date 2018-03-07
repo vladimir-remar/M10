@@ -76,75 +76,51 @@ alter table informes add constraint fk_idanalitica foreign key
 delete restrict;
 alter table resultats alter COLUMN resultats drop not null ;
 */
-CREATE OR REPLACE FUNCTION analitica_valida() RETURNS trigger 
+CREATE OR REPLACE FUNCTION analitica_acabada() RETURNS trigger 
 AS $analitica_ok$
 DECLARE
   sql1 text;
   rec record;
+  analitica_a_procesar bigint;
   estat_analitica boolean :=True;
-  trobat boolean := False;
-  analitica bigint;
+  trobat boolean :=False;
 BEGIN
   IF TG_TABLE_NAME = 'resultats' THEN
-    sql1:= 'select * from resultats where idanalitica = '||new.idanalitica||';';
-    
-    FOR rec IN EXECUTE(sql1) LOOP
-      IF rec.resultats IS NULL or rec.resultats = '' THEN
-        estat_analitica := False;
-        EXIT;
-      END IF;
-    END LOOP;
-    
-    IF estat_analitica THEN
-      sql1 := 'select * from resultats_patologics join resultats on resultats_patologics.idresultat=resultats.idresultat and resultats.idanalitica = '||new.idanalitica||';'; 
-      FOR rec IN EXECUTE (sql1) LOOP
-        trobat := True;
-      END LOOP;
-      
-      IF NOT trobat THEN
-        INSERT INTO informes VALUES(new.idanalitica, now());
-      ELSE 
-        RETURN NULL;
-      END IF;
-    ELSE
-      RETURN NULL;
-    END IF;
+    analitica_a_procesar := new.idanalitica;
+  ELSE
+    sql1 := 'select idanalitica from resultats where idresultat = '||old.idresultat||';';
+    EXECUTE (sql1) INTO analitica_a_procesar;
+  END IF;
+  sql1:= 'select * from resultats where idanalitica = '||analitica_a_procesar||' and (resultats IS '||'NULL'||' or resultats = '''');';
   
-  ELSEIF TG_TABLE_NAME = 'resultats_patologics' THEN
-    sql1 := 'select * from resultats_patologics join resultats on resultats_patologics.idresultat=resultats.idresultat where idanalitica in (select idanalitica from resultats where idresultat = '||old.idresultat||') ;';
-    FOR rec IN EXECUTE(sql1) LOOP
-      trobat :=True;
+  FOR rec IN EXECUTE(sql1) LOOP
+    estat_analitica := False;
+  END LOOP;
+  
+  IF estat_analitica THEN
+    sql1 := 'select * from resultats_patologics join resultats on resultats_patologics.idresultat=resultats.idresultat 
+    and resultats.idanalitica = '||analitica_a_procesar||';'; 
+    FOR rec IN EXECUTE (sql1) LOOP
+      trobat := True;
     END LOOP;
     
     IF NOT trobat THEN
-      sql1 :='select * from resultats where idanalitica  in (select idanalitica from resultats where idresultat = '||old.idresultat||' );';
-      FOR rec IN EXECUTE(sql1) LOOP
-        IF rec.resultats IS NULL or rec.resultats = '' THEN
-          estat_analitica := False;
-          EXIT;
-        END IF;
-        analitica:=rec.idanalitica;
-      END LOOP;
-      
-      IF estat_analitica THEN
-        INSERT INTO informes VALUES(analitica, now());
-      ELSE
-        RETURN NULL;
-      END IF;
-    ELSE
+      INSERT INTO informes VALUES(analitica_a_procesar, now());
+    ELSE 
       RETURN NULL;
     END IF;
+  ELSE
+    RETURN NULL;
   END IF;
+    
 RETURN NEW;
 END;
 $analitica_ok$ 
 LANGUAGE plpgsql;
 
-CREATE TRIGGER analitica_ok AFTER DELETE ON resultats_patologics
-	FOR EACH ROW EXECUTE PROCEDURE analitica_valida();
+CREATE TRIGGER analitica_ok AFTER DELETE ON resultats_patologics FOR EACH ROW EXECUTE PROCEDURE analitica_acabada();
 	
-CREATE TRIGGER analitica_ok AFTER UPDATE OR INSERT ON resultats
-	FOR EACH ROW EXECUTE PROCEDURE analitica_valida();
+CREATE TRIGGER b_analitica_ok AFTER UPDATE OR INSERT ON resultats FOR EACH ROW EXECUTE PROCEDURE analitica_acabada();
 
 -- #####################################################################
 /*
@@ -171,8 +147,8 @@ DECLARE
   nivell smallint;
   missatge varchar;
 BEGIN
-  --select * from resultats join provestecnica on resultats.idresultat=1 and resultats.idprovatecnica=provestecnica.idprovatecnica join catalegproves on provestecnica.idprova=catalegproves.idprova and catalegproves.alarma=1;
-  sql1 := 'select * from resultats join provestecnica on resultats.idresultat='|| new.idresultat ||'  join catalegproves on provestecnica.idprova=catalegproves.idprova where resultats.idprovatecnica=provestecnica.idprovatecnica and catalegproves.nivell_alarma>0;';
+  --select * from resultats join provestecnica on resultats.idresultat=242  join catalegproves on provestecnica.idprova=catalegproves.idprova where resultats.idprovatecnica=provestecnica.idprovatecnica and catalegproves.nivell_alarma>0;
+  sql1 := 'select * from resultats join provestecnica on resultats.idprovatecnica=provestecnica.idprovatecnica join catalegproves on provestecnica.idprova=catalegproves.idprova where  catalegproves.nivell_alarma>0 and resultats.idresultat='|| new.idresultat ||';';
   FOR rec IN EXECUTE(sql1) LOOP
     trobat := True;
     nivell := rec.nivell_alarma;

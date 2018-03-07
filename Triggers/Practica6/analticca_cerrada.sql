@@ -41,7 +41,6 @@ END;
 $analitica_ok$ 
 LANGUAGE plpgsql;
 
-CREATE TRIGGER analitica_ok AFTER DELETE ON resultats_patologics
-	FOR EACH ROW EXECUTE PROCEDURE analitica_acabada();
+CREATE TRIGGER analitica_ok AFTER DELETE ON resultats_patologics FOR EACH ROW EXECUTE PROCEDURE analitica_acabada();
 	
-CREATE TRIGGER analitica_ok AFTER UPDATE OR INSERT ON resultats FOR EACH ROW EXECUTE PROCEDURE analitica_acabada();
+CREATE TRIGGER b_analitica_ok AFTER UPDATE OR INSERT ON resultats FOR EACH ROW EXECUTE PROCEDURE analitica_acabada();
