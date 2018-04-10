@@ -1,0 +1,30 @@
+edx.students
+1) Estudiants de gènere masculí nascuts al 1993 (81)
+2) Estudiants nascuts a la dècada dels 80 (936)
+3) Estudiants de gènere femení nascuts a la dècada dels 90 (48)
+4) Estudiants que no hagin nascut l'any 1985 (3147)
+5) Estudiants nascuts el 1970, 1980 o 1990 (293)
+6) Estudiants no nascuts el 1970, ni el 1980, ni el 1990 (2950)
+7) Estudiants nascuts un any parell (1684)
+8) Estudiants nascuts un any inparell de la dècada dels 70 i de gènere femení (403)
+9) Estudiants amb un @mail que acabi en .net (47)
+10)Estudiants amb un @mail que acabi en .org (16)
+11)Estudiants amb DNI que comenci i acabi en lletra (244)
+12)Estudiants amb un nom que comenci per vocal (amb tots els accesnts possibles) (760)
+13)Estudiants amb un nom compost (470)
+14)Estudiants amb un nom de més de 13 caràcters (138)
+15)Estudiants amb 2 o més vocals en els seu nom (705)
+
+edx.bios
+16)Desenvolupadors que hagin fet contribucions en OOP (2)
+17)Desenvolupadors que hagin fet contribucions en OOP o Java (3)
+18)Desenvolupadors que hagin fet contribucions en OOP i Simula (2)
+
+
+
+
+
+
+
+
+

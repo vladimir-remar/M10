@@ -1,7 +1,7 @@
 --
 -- PostgreSQL database dump
 --
-
+create database if not exists lab_clinc;
 -- Dumped from database version 9.5.10
 -- Dumped by pg_dump version 9.5.10
 
@@ -30,7 +30,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- Name: actulizacions_resultats(); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: actulizacions_resultats(); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION actulizacions_resultats() RETURNS text
@@ -110,10 +110,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.actulizacions_resultats() OWNER TO isx48262276;
+ALTER FUNCTION public.actulizacions_resultats() OWNER TOvremar;
 
 --
--- Name: comproba_pacient(character varying, character varying); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: comproba_pacient(character varying, character varying); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION comproba_pacient(camp character varying, valor character varying) RETURNS text
@@ -139,10 +139,10 @@ END;
 $_$;
 
 
-ALTER FUNCTION public.comproba_pacient(camp character varying, valor character varying) OWNER TO isx48262276;
+ALTER FUNCTION public.comproba_pacient(camp character varying, valor character varying) OWNER TOvremar;
 
 --
--- Name: determina_resultat(bigint, bigint, character varying); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: determina_resultat(bigint, bigint, character varying); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION determina_resultat(idprovatecnica bigint, idpacient bigint, resultat character varying) RETURNS text
@@ -241,10 +241,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.determina_resultat(idprovatecnica bigint, idpacient bigint, resultat character varying) OWNER TO isx48262276;
+ALTER FUNCTION public.determina_resultat(idprovatecnica bigint, idpacient bigint, resultat character varying) OWNER TOvremar;
 
 --
--- Name: dni_correct(character varying); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: dni_correct(character varying); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION dni_correct(dni character varying) RETURNS text
@@ -280,10 +280,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.dni_correct(dni character varying) OWNER TO isx48262276;
+ALTER FUNCTION public.dni_correct(dni character varying) OWNER TOvremar;
 
 --
--- Name: es_numeric(character varying); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: es_numeric(character varying); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION es_numeric(num_str character varying) RETURNS boolean
@@ -300,10 +300,10 @@ END
 $$;
 
 
-ALTER FUNCTION public.es_numeric(num_str character varying) OWNER TO isx48262276;
+ALTER FUNCTION public.es_numeric(num_str character varying) OWNER TOvremar;
 
 --
--- Name: examina_resultats(bigint, bigint); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: examina_resultats(bigint, bigint); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION examina_resultats(id_pacient bigint, id_analitica bigint DEFAULT NULL::bigint) RETURNS text
@@ -412,10 +412,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.examina_resultats(id_pacient bigint, id_analitica bigint) OWNER TO isx48262276;
+ALTER FUNCTION public.examina_resultats(id_pacient bigint, id_analitica bigint) OWNER TOvremar;
 
 --
--- Name: exemple(integer, integer); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: exemple(integer, integer); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION exemple(integer, integer) RETURNS integer
@@ -435,10 +435,10 @@ END;
 $_$;
 
 
-ALTER FUNCTION public.exemple(integer, integer) OWNER TO isx48262276;
+ALTER FUNCTION public.exemple(integer, integer) OWNER TOvremar;
 
 --
--- Name: exemple_txt(integer, integer); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: exemple_txt(integer, integer); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION exemple_txt(integer, integer) RETURNS text
@@ -465,10 +465,10 @@ END;
 $_$;
 
 
-ALTER FUNCTION public.exemple_txt(integer, integer) OWNER TO isx48262276;
+ALTER FUNCTION public.exemple_txt(integer, integer) OWNER TOvremar;
 
 --
--- Name: historialpacpro(bigint, bigint, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: historialpacpro(bigint, bigint, timestamp without time zone); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION historialpacpro(idpacient bigint, idprova bigint, data_inici timestamp without time zone DEFAULT NULL::timestamp without time zone) RETURNS text
@@ -567,10 +567,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.historialpacpro(idpacient bigint, idprova bigint, data_inici timestamp without time zone) OWNER TO isx48262276;
+ALTER FUNCTION public.historialpacpro(idpacient bigint, idprova bigint, data_inici timestamp without time zone) OWNER TOvremar;
 
 --
--- Name: informehistorial(bigint, bigint); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: informehistorial(bigint, bigint); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION informehistorial(id_pacient bigint, id_analitica bigint DEFAULT NULL::bigint) RETURNS text
@@ -659,10 +659,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.informehistorial(id_pacient bigint, id_analitica bigint) OWNER TO isx48262276;
+ALTER FUNCTION public.informehistorial(id_pacient bigint, id_analitica bigint) OWNER TOvremar;
 
 --
--- Name: insert_analitiques(bigint, bigint, character varying); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: insert_analitiques(bigint, bigint, character varying); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION insert_analitiques(iddoctor bigint, idpacient bigint, fecha character varying) RETURNS text
@@ -686,10 +686,10 @@ END;
 $_$;
 
 
-ALTER FUNCTION public.insert_analitiques(iddoctor bigint, idpacient bigint, fecha character varying) OWNER TO isx48262276;
+ALTER FUNCTION public.insert_analitiques(iddoctor bigint, idpacient bigint, fecha character varying) OWNER TOvremar;
 
 --
--- Name: insert_pacients(character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: insert_pacients(character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION insert_pacients(nom character varying, cognoms character varying, dni character varying, data_naix character varying, sexe character varying, adreca character varying, ciutat character varying, c_postal character varying, telefon character varying, email character varying, num_ss character varying DEFAULT ''::character varying, num_cat character varying DEFAULT ''::character varying, nie character varying DEFAULT ''::character varying, passaport character varying DEFAULT ''::character varying) RETURNS text
@@ -809,10 +809,10 @@ END;
 $_$;
 
 
-ALTER FUNCTION public.insert_pacients(nom character varying, cognoms character varying, dni character varying, data_naix character varying, sexe character varying, adreca character varying, ciutat character varying, c_postal character varying, telefon character varying, email character varying, num_ss character varying, num_cat character varying, nie character varying, passaport character varying) OWNER TO isx48262276;
+ALTER FUNCTION public.insert_pacients(nom character varying, cognoms character varying, dni character varying, data_naix character varying, sexe character varying, adreca character varying, ciutat character varying, c_postal character varying, telefon character varying, email character varying, num_ss character varying, num_cat character varying, nie character varying, passaport character varying) OWNER TOvremar;
 
 --
--- Name: insert_resultats(bigint, bigint, character varying); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: insert_resultats(bigint, bigint, character varying); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION insert_resultats(idanalitica bigint, idprovatecnica bigint, resultats character varying) RETURNS text
@@ -834,10 +834,10 @@ END;
 $_$;
 
 
-ALTER FUNCTION public.insert_resultats(idanalitica bigint, idprovatecnica bigint, resultats character varying) OWNER TO isx48262276;
+ALTER FUNCTION public.insert_resultats(idanalitica bigint, idprovatecnica bigint, resultats character varying) OWNER TOvremar;
 
 --
--- Name: insert_resultats(bigint, bigint, character varying, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: insert_resultats(bigint, bigint, character varying, timestamp without time zone); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION insert_resultats(idanalitica bigint, idprovatecnica bigint, resultats character varying, dataresultat timestamp without time zone) RETURNS text
@@ -859,10 +859,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.insert_resultats(idanalitica bigint, idprovatecnica bigint, resultats character varying, dataresultat timestamp without time zone) OWNER TO isx48262276;
+ALTER FUNCTION public.insert_resultats(idanalitica bigint, idprovatecnica bigint, resultats character varying, dataresultat timestamp without time zone) OWNER TOvremar;
 
 --
--- Name: insert_resultats(bigint, bigint, character varying, character varying); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: insert_resultats(bigint, bigint, character varying, character varying); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION insert_resultats(idanalitica bigint, idprovatecnica bigint, resultats character varying, dataresultat character varying) RETURNS text
@@ -884,10 +884,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.insert_resultats(idanalitica bigint, idprovatecnica bigint, resultats character varying, dataresultat character varying) OWNER TO isx48262276;
+ALTER FUNCTION public.insert_resultats(idanalitica bigint, idprovatecnica bigint, resultats character varying, dataresultat character varying) OWNER TOvremar;
 
 --
--- Name: nous_pacients(); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: nous_pacients(); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION nous_pacients() RETURNS text
@@ -949,10 +949,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.nous_pacients() OWNER TO isx48262276;
+ALTER FUNCTION public.nous_pacients() OWNER TOvremar;
 
 --
--- Name: sumar1(integer); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: sumar1(integer); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION sumar1(integer) RETURNS integer
@@ -964,10 +964,10 @@ END;
 $_$;
 
 
-ALTER FUNCTION public.sumar1(integer) OWNER TO isx48262276;
+ALTER FUNCTION public.sumar1(integer) OWNER TOvremar;
 
 --
--- Name: update_nous(character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: update_nous(character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION update_nous(nom character varying, cognoms character varying, dni character varying, data_naix character varying, sexe character varying, adreca character varying, ciutat character varying, c_postal character varying, telefon character varying, email character varying, num_ss character varying DEFAULT ''::character varying, num_cat character varying DEFAULT ''::character varying, nie character varying DEFAULT ''::character varying, passaport character varying DEFAULT ''::character varying) RETURNS text
@@ -1095,10 +1095,10 @@ END;
 $_$;
 
 
-ALTER FUNCTION public.update_nous(nom character varying, cognoms character varying, dni character varying, data_naix character varying, sexe character varying, adreca character varying, ciutat character varying, c_postal character varying, telefon character varying, email character varying, num_ss character varying, num_cat character varying, nie character varying, passaport character varying) OWNER TO isx48262276;
+ALTER FUNCTION public.update_nous(nom character varying, cognoms character varying, dni character varying, data_naix character varying, sexe character varying, adreca character varying, ciutat character varying, c_postal character varying, telefon character varying, email character varying, num_ss character varying, num_cat character varying, nie character varying, passaport character varying) OWNER TOvremar;
 
 --
--- Name: update_resultats(bigint, bigint, character varying); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: update_resultats(bigint, bigint, character varying); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION update_resultats(id_analitica bigint, id_povatecnica bigint, resultat character varying) RETURNS text
@@ -1126,10 +1126,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_resultats(id_analitica bigint, id_povatecnica bigint, resultat character varying) OWNER TO isx48262276;
+ALTER FUNCTION public.update_resultats(id_analitica bigint, id_povatecnica bigint, resultat character varying) OWNER TOvremar;
 
 --
--- Name: valorar_idresultat(bigint); Type: FUNCTION; Schema: public; Owner: isx48262276
+-- Name: valorar_idresultat(bigint); Type: FUNCTION; Schema: public; Owner:vremar
 --
 
 CREATE FUNCTION valorar_idresultat(id_resultat bigint) RETURNS text
@@ -1184,14 +1184,14 @@ END;
 $$;
 
 
-ALTER FUNCTION public.valorar_idresultat(id_resultat bigint) OWNER TO isx48262276;
+ALTER FUNCTION public.valorar_idresultat(id_resultat bigint) OWNER TOvremar;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: alarmes; Type: TABLE; Schema: public; Owner: isx48262276
+-- Name: alarmes; Type: TABLE; Schema: public; Owner:vremar
 --
 
 CREATE TABLE alarmes (
@@ -1203,10 +1203,10 @@ CREATE TABLE alarmes (
 );
 
 
-ALTER TABLE alarmes OWNER TO isx48262276;
+ALTER TABLE alarmes OWNER TOvremar;
 
 --
--- Name: alarmes_idalarma_seq; Type: SEQUENCE; Schema: public; Owner: isx48262276
+-- Name: alarmes_idalarma_seq; Type: SEQUENCE; Schema: public; Owner:vremar
 --
 
 CREATE SEQUENCE alarmes_idalarma_seq
@@ -1217,17 +1217,17 @@ CREATE SEQUENCE alarmes_idalarma_seq
     CACHE 1;
 
 
-ALTER TABLE alarmes_idalarma_seq OWNER TO isx48262276;
+ALTER TABLE alarmes_idalarma_seq OWNER TOvremar;
 
 --
--- Name: alarmes_idalarma_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: isx48262276
+-- Name: alarmes_idalarma_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner:vremar
 --
 
 ALTER SEQUENCE alarmes_idalarma_seq OWNED BY alarmes.idalarma;
 
 
 --
--- Name: analitiques; Type: TABLE; Schema: public; Owner: isx48262276
+-- Name: analitiques; Type: TABLE; Schema: public; Owner:vremar
 --
 
 CREATE TABLE analitiques (
@@ -1238,10 +1238,10 @@ CREATE TABLE analitiques (
 );
 
 
-ALTER TABLE analitiques OWNER TO isx48262276;
+ALTER TABLE analitiques OWNER TOvremar;
 
 --
--- Name: analitiques_idanalitica_seq; Type: SEQUENCE; Schema: public; Owner: isx48262276
+-- Name: analitiques_idanalitica_seq; Type: SEQUENCE; Schema: public; Owner:vremar
 --
 
 CREATE SEQUENCE analitiques_idanalitica_seq
@@ -1252,17 +1252,17 @@ CREATE SEQUENCE analitiques_idanalitica_seq
     CACHE 1;
 
 
-ALTER TABLE analitiques_idanalitica_seq OWNER TO isx48262276;
+ALTER TABLE analitiques_idanalitica_seq OWNER TOvremar;
 
 --
--- Name: analitiques_idanalitica_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: isx48262276
+-- Name: analitiques_idanalitica_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner:vremar
 --
 
 ALTER SEQUENCE analitiques_idanalitica_seq OWNED BY analitiques.idanalitica;
 
 
 --
--- Name: catalegproves; Type: TABLE; Schema: public; Owner: isx48262276
+-- Name: catalegproves; Type: TABLE; Schema: public; Owner:vremar
 --
 
 CREATE TABLE catalegproves (
@@ -1273,10 +1273,10 @@ CREATE TABLE catalegproves (
 );
 
 
-ALTER TABLE catalegproves OWNER TO isx48262276;
+ALTER TABLE catalegproves OWNER TOvremar;
 
 --
--- Name: doctors; Type: TABLE; Schema: public; Owner: isx48262276
+-- Name: doctors; Type: TABLE; Schema: public; Owner:vremar
 --
 
 CREATE TABLE doctors (
@@ -1287,10 +1287,10 @@ CREATE TABLE doctors (
 );
 
 
-ALTER TABLE doctors OWNER TO isx48262276;
+ALTER TABLE doctors OWNER TOvremar;
 
 --
--- Name: doctors_iddoctor_seq; Type: SEQUENCE; Schema: public; Owner: isx48262276
+-- Name: doctors_iddoctor_seq; Type: SEQUENCE; Schema: public; Owner:vremar
 --
 
 CREATE SEQUENCE doctors_iddoctor_seq
@@ -1301,17 +1301,17 @@ CREATE SEQUENCE doctors_iddoctor_seq
     CACHE 1;
 
 
-ALTER TABLE doctors_iddoctor_seq OWNER TO isx48262276;
+ALTER TABLE doctors_iddoctor_seq OWNER TOvremar;
 
 --
--- Name: doctors_iddoctor_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: isx48262276
+-- Name: doctors_iddoctor_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner:vremar
 --
 
 ALTER SEQUENCE doctors_iddoctor_seq OWNED BY doctors.iddoctor;
 
 
 --
--- Name: pacients; Type: TABLE; Schema: public; Owner: isx48262276
+-- Name: pacients; Type: TABLE; Schema: public; Owner:vremar
 --
 
 CREATE TABLE pacients (
@@ -1333,10 +1333,10 @@ CREATE TABLE pacients (
 );
 
 
-ALTER TABLE pacients OWNER TO isx48262276;
+ALTER TABLE pacients OWNER TOvremar;
 
 --
--- Name: pacients_idpacient_seq; Type: SEQUENCE; Schema: public; Owner: isx48262276
+-- Name: pacients_idpacient_seq; Type: SEQUENCE; Schema: public; Owner:vremar
 --
 
 CREATE SEQUENCE pacients_idpacient_seq
@@ -1347,17 +1347,17 @@ CREATE SEQUENCE pacients_idpacient_seq
     CACHE 1;
 
 
-ALTER TABLE pacients_idpacient_seq OWNER TO isx48262276;
+ALTER TABLE pacients_idpacient_seq OWNER TOvremar;
 
 --
--- Name: pacients_idpacient_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: isx48262276
+-- Name: pacients_idpacient_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner:vremar
 --
 
 ALTER SEQUENCE pacients_idpacient_seq OWNED BY pacients.idpacient;
 
 
 --
--- Name: pacients_nous; Type: TABLE; Schema: public; Owner: isx48262276
+-- Name: pacients_nous; Type: TABLE; Schema: public; Owner:vremar
 --
 
 CREATE TABLE pacients_nous (
@@ -1378,10 +1378,10 @@ CREATE TABLE pacients_nous (
 );
 
 
-ALTER TABLE pacients_nous OWNER TO isx48262276;
+ALTER TABLE pacients_nous OWNER TOvremar;
 
 --
--- Name: provestecnica; Type: TABLE; Schema: public; Owner: isx48262276
+-- Name: provestecnica; Type: TABLE; Schema: public; Owner:vremar
 --
 
 CREATE TABLE provestecnica (
@@ -1400,10 +1400,10 @@ CREATE TABLE provestecnica (
 );
 
 
-ALTER TABLE provestecnica OWNER TO isx48262276;
+ALTER TABLE provestecnica OWNER TOvremar;
 
 --
--- Name: provestecnica_idprovatecnica_seq; Type: SEQUENCE; Schema: public; Owner: isx48262276
+-- Name: provestecnica_idprovatecnica_seq; Type: SEQUENCE; Schema: public; Owner:vremar
 --
 
 CREATE SEQUENCE provestecnica_idprovatecnica_seq
@@ -1414,17 +1414,17 @@ CREATE SEQUENCE provestecnica_idprovatecnica_seq
     CACHE 1;
 
 
-ALTER TABLE provestecnica_idprovatecnica_seq OWNER TO isx48262276;
+ALTER TABLE provestecnica_idprovatecnica_seq OWNER TOvremar;
 
 --
--- Name: provestecnica_idprovatecnica_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: isx48262276
+-- Name: provestecnica_idprovatecnica_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner:vremar
 --
 
 ALTER SEQUENCE provestecnica_idprovatecnica_seq OWNED BY provestecnica.idprovatecnica;
 
 
 --
--- Name: resultats; Type: TABLE; Schema: public; Owner: isx48262276
+-- Name: resultats; Type: TABLE; Schema: public; Owner:vremar
 --
 
 CREATE TABLE resultats (
@@ -1436,10 +1436,10 @@ CREATE TABLE resultats (
 );
 
 
-ALTER TABLE resultats OWNER TO isx48262276;
+ALTER TABLE resultats OWNER TOvremar;
 
 --
--- Name: resultats_idresultat_seq; Type: SEQUENCE; Schema: public; Owner: isx48262276
+-- Name: resultats_idresultat_seq; Type: SEQUENCE; Schema: public; Owner:vremar
 --
 
 CREATE SEQUENCE resultats_idresultat_seq
@@ -1450,17 +1450,17 @@ CREATE SEQUENCE resultats_idresultat_seq
     CACHE 1;
 
 
-ALTER TABLE resultats_idresultat_seq OWNER TO isx48262276;
+ALTER TABLE resultats_idresultat_seq OWNER TOvremar;
 
 --
--- Name: resultats_idresultat_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: isx48262276
+-- Name: resultats_idresultat_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner:vremar
 --
 
 ALTER SEQUENCE resultats_idresultat_seq OWNED BY resultats.idresultat;
 
 
 --
--- Name: resultatsnous; Type: TABLE; Schema: public; Owner: isx48262276
+-- Name: resultatsnous; Type: TABLE; Schema: public; Owner:vremar
 --
 
 CREATE TABLE resultatsnous (
@@ -1470,52 +1470,52 @@ CREATE TABLE resultatsnous (
 );
 
 
-ALTER TABLE resultatsnous OWNER TO isx48262276;
+ALTER TABLE resultatsnous OWNER TOvremar;
 
 --
--- Name: idalarma; Type: DEFAULT; Schema: public; Owner: isx48262276
+-- Name: idalarma; Type: DEFAULT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY alarmes ALTER COLUMN idalarma SET DEFAULT nextval('alarmes_idalarma_seq'::regclass);
 
 
 --
--- Name: idanalitica; Type: DEFAULT; Schema: public; Owner: isx48262276
+-- Name: idanalitica; Type: DEFAULT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY analitiques ALTER COLUMN idanalitica SET DEFAULT nextval('analitiques_idanalitica_seq'::regclass);
 
 
 --
--- Name: iddoctor; Type: DEFAULT; Schema: public; Owner: isx48262276
+-- Name: iddoctor; Type: DEFAULT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY doctors ALTER COLUMN iddoctor SET DEFAULT nextval('doctors_iddoctor_seq'::regclass);
 
 
 --
--- Name: idpacient; Type: DEFAULT; Schema: public; Owner: isx48262276
+-- Name: idpacient; Type: DEFAULT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY pacients ALTER COLUMN idpacient SET DEFAULT nextval('pacients_idpacient_seq'::regclass);
 
 
 --
--- Name: idprovatecnica; Type: DEFAULT; Schema: public; Owner: isx48262276
+-- Name: idprovatecnica; Type: DEFAULT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY provestecnica ALTER COLUMN idprovatecnica SET DEFAULT nextval('provestecnica_idprovatecnica_seq'::regclass);
 
 
 --
--- Name: idresultat; Type: DEFAULT; Schema: public; Owner: isx48262276
+-- Name: idresultat; Type: DEFAULT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY resultats ALTER COLUMN idresultat SET DEFAULT nextval('resultats_idresultat_seq'::regclass);
 
 
 --
--- Data for Name: alarmes; Type: TABLE DATA; Schema: public; Owner: isx48262276
+-- Data for Name: alarmes; Type: TABLE DATA; Schema: public; Owner:vremar
 --
 
 COPY alarmes (idalarma, idresultat, nivellalama, validat, missatge) FROM stdin;
@@ -1523,14 +1523,14 @@ COPY alarmes (idalarma, idresultat, nivellalama, validat, missatge) FROM stdin;
 
 
 --
--- Name: alarmes_idalarma_seq; Type: SEQUENCE SET; Schema: public; Owner: isx48262276
+-- Name: alarmes_idalarma_seq; Type: SEQUENCE SET; Schema: public; Owner:vremar
 --
 
 SELECT pg_catalog.setval('alarmes_idalarma_seq', 1, false);
 
 
 --
--- Data for Name: analitiques; Type: TABLE DATA; Schema: public; Owner: isx48262276
+-- Data for Name: analitiques; Type: TABLE DATA; Schema: public; Owner:vremar
 --
 
 COPY analitiques (idanalitica, iddoctor, idpacient, dataanalitica) FROM stdin;
@@ -1552,14 +1552,14 @@ COPY analitiques (idanalitica, iddoctor, idpacient, dataanalitica) FROM stdin;
 
 
 --
--- Name: analitiques_idanalitica_seq; Type: SEQUENCE SET; Schema: public; Owner: isx48262276
+-- Name: analitiques_idanalitica_seq; Type: SEQUENCE SET; Schema: public; Owner:vremar
 --
 
 SELECT pg_catalog.setval('analitiques_idanalitica_seq', 14, true);
 
 
 --
--- Data for Name: catalegproves; Type: TABLE DATA; Schema: public; Owner: isx48262276
+-- Data for Name: catalegproves; Type: TABLE DATA; Schema: public; Owner:vremar
 --
 
 COPY catalegproves (idprova, nom_prova, descripcio, acronim) FROM stdin;
@@ -1571,7 +1571,7 @@ COPY catalegproves (idprova, nom_prova, descripcio, acronim) FROM stdin;
 
 
 --
--- Data for Name: doctors; Type: TABLE DATA; Schema: public; Owner: isx48262276
+-- Data for Name: doctors; Type: TABLE DATA; Schema: public; Owner:vremar
 --
 
 COPY doctors (iddoctor, nom, cognoms, especialitat) FROM stdin;
@@ -1582,14 +1582,14 @@ COPY doctors (iddoctor, nom, cognoms, especialitat) FROM stdin;
 
 
 --
--- Name: doctors_iddoctor_seq; Type: SEQUENCE SET; Schema: public; Owner: isx48262276
+-- Name: doctors_iddoctor_seq; Type: SEQUENCE SET; Schema: public; Owner:vremar
 --
 
 SELECT pg_catalog.setval('doctors_iddoctor_seq', 3, true);
 
 
 --
--- Data for Name: pacients; Type: TABLE DATA; Schema: public; Owner: isx48262276
+-- Data for Name: pacients; Type: TABLE DATA; Schema: public; Owner:vremar
 --
 
 COPY pacients (idpacient, nom, cognoms, dni, data_naix, sexe, adreca, ciutat, c_postal, telefon, email, num_ss, num_cat, nie, passaport) FROM stdin;
@@ -1604,14 +1604,14 @@ COPY pacients (idpacient, nom, cognoms, dni, data_naix, sexe, adreca, ciutat, c_
 
 
 --
--- Name: pacients_idpacient_seq; Type: SEQUENCE SET; Schema: public; Owner: isx48262276
+-- Name: pacients_idpacient_seq; Type: SEQUENCE SET; Schema: public; Owner:vremar
 --
 
 SELECT pg_catalog.setval('pacients_idpacient_seq', 27, true);
 
 
 --
--- Data for Name: pacients_nous; Type: TABLE DATA; Schema: public; Owner: isx48262276
+-- Data for Name: pacients_nous; Type: TABLE DATA; Schema: public; Owner:vremar
 --
 
 COPY pacients_nous (nom, cognoms, dni, data_naix, sexe, adreca, ciutat, c_postal, telefon, email, num_ss, num_cat, nie, passaport) FROM stdin;
@@ -1619,7 +1619,7 @@ COPY pacients_nous (nom, cognoms, dni, data_naix, sexe, adreca, ciutat, c_postal
 
 
 --
--- Data for Name: provestecnica; Type: TABLE DATA; Schema: public; Owner: isx48262276
+-- Data for Name: provestecnica; Type: TABLE DATA; Schema: public; Owner:vremar
 --
 
 COPY provestecnica (idprovatecnica, idprova, dataprova, resultat_numeric, minpat, maxpat, minpan, maxpan, alfpat, sexe, edat_inicial, edat_final) FROM stdin;
@@ -1642,14 +1642,14 @@ COPY provestecnica (idprovatecnica, idprova, dataprova, resultat_numeric, minpat
 
 
 --
--- Name: provestecnica_idprovatecnica_seq; Type: SEQUENCE SET; Schema: public; Owner: isx48262276
+-- Name: provestecnica_idprovatecnica_seq; Type: SEQUENCE SET; Schema: public; Owner:vremar
 --
 
 SELECT pg_catalog.setval('provestecnica_idprovatecnica_seq', 9, true);
 
 
 --
--- Data for Name: resultats; Type: TABLE DATA; Schema: public; Owner: isx48262276
+-- Data for Name: resultats; Type: TABLE DATA; Schema: public; Owner:vremar
 --
 
 COPY resultats (idresultat, idanalitica, idprovatecnica, resultats, dataresultat) FROM stdin;
@@ -1675,14 +1675,14 @@ COPY resultats (idresultat, idanalitica, idprovatecnica, resultats, dataresultat
 
 
 --
--- Name: resultats_idresultat_seq; Type: SEQUENCE SET; Schema: public; Owner: isx48262276
+-- Name: resultats_idresultat_seq; Type: SEQUENCE SET; Schema: public; Owner:vremar
 --
 
 SELECT pg_catalog.setval('resultats_idresultat_seq', 27, true);
 
 
 --
--- Data for Name: resultatsnous; Type: TABLE DATA; Schema: public; Owner: isx48262276
+-- Data for Name: resultatsnous; Type: TABLE DATA; Schema: public; Owner:vremar
 --
 
 COPY resultatsnous (id_analitica, id_provatecnica, resultat) FROM stdin;
@@ -1690,7 +1690,7 @@ COPY resultatsnous (id_analitica, id_provatecnica, resultat) FROM stdin;
 
 
 --
--- Name: alarmes_pkey; Type: CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: alarmes_pkey; Type: CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY alarmes
@@ -1698,7 +1698,7 @@ ALTER TABLE ONLY alarmes
 
 
 --
--- Name: analitiques_pkey; Type: CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: analitiques_pkey; Type: CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY analitiques
@@ -1706,7 +1706,7 @@ ALTER TABLE ONLY analitiques
 
 
 --
--- Name: catalegproves_pkey; Type: CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: catalegproves_pkey; Type: CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY catalegproves
@@ -1714,7 +1714,7 @@ ALTER TABLE ONLY catalegproves
 
 
 --
--- Name: doctors_pkey; Type: CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: doctors_pkey; Type: CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY doctors
@@ -1722,7 +1722,7 @@ ALTER TABLE ONLY doctors
 
 
 --
--- Name: pacients_pkey; Type: CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: pacients_pkey; Type: CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY pacients
@@ -1730,7 +1730,7 @@ ALTER TABLE ONLY pacients
 
 
 --
--- Name: provestecnica_pkey; Type: CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: provestecnica_pkey; Type: CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY provestecnica
@@ -1738,7 +1738,7 @@ ALTER TABLE ONLY provestecnica
 
 
 --
--- Name: resultats_idanalitica_idprovatecnica_key; Type: CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: resultats_idanalitica_idprovatecnica_key; Type: CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY resultats
@@ -1746,7 +1746,7 @@ ALTER TABLE ONLY resultats
 
 
 --
--- Name: resultats_pkey; Type: CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: resultats_pkey; Type: CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY resultats
@@ -1754,7 +1754,7 @@ ALTER TABLE ONLY resultats
 
 
 --
--- Name: fk_idanalitica; Type: FK CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: fk_idanalitica; Type: FK CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY resultats
@@ -1762,7 +1762,7 @@ ALTER TABLE ONLY resultats
 
 
 --
--- Name: fk_iddoctor; Type: FK CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: fk_iddoctor; Type: FK CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY analitiques
@@ -1770,7 +1770,7 @@ ALTER TABLE ONLY analitiques
 
 
 --
--- Name: fk_idpacient; Type: FK CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: fk_idpacient; Type: FK CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY analitiques
@@ -1778,7 +1778,7 @@ ALTER TABLE ONLY analitiques
 
 
 --
--- Name: fk_idprova; Type: FK CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: fk_idprova; Type: FK CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY provestecnica
@@ -1786,7 +1786,7 @@ ALTER TABLE ONLY provestecnica
 
 
 --
--- Name: fk_idresultat; Type: FK CONSTRAINT; Schema: public; Owner: isx48262276
+-- Name: fk_idresultat; Type: FK CONSTRAINT; Schema: public; Owner:vremar
 --
 
 ALTER TABLE ONLY alarmes
