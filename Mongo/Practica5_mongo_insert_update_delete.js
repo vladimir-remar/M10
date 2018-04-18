@@ -95,10 +95,26 @@ db.inventory.deleteOne( { status: "D" } )
 
 Exercicis
 1) Canviar els noms dels estudiants que es diuen "Mikel" per "Miky"
+
+db.students.updateOne({ "name": "Mikel" },{$set: { "name": "Miky"},$currentDate: { lastModified: true }})
+db.students.updateMany({ "name": "Mikel" },{$set: { "name": "Miky"},$currentDate: { lastModified: true }})
+
 2) Incrementar, a tweets, en un el número de followers dels usuaris que tenen més de 50000 amics (12). Mirar $inc.
+db.tweets.find({"user.friends_count":{$gt:50000}}).count()
+db.tweets.updateMany({ "user.friends_count":{$gt:50000} },{$inc: {"user.followers_count":1},$currentDate: { lastModified: true }})
+
+
 3) Decrementar, a tweets, en un el número de followers dels usuaris que tenen més de 50000 amics (12).
+db.tweets.updateMany({ "user.friends_count":{$gt:50000} },{$inc: {"user.followers_count":-1},$currentDate: { lastModified: true }})
+
 4) Mofificar, a tweets, el número d'amics dels usuaris : si el número de seguidors és més alt que el número 
-d'amics posar com a número d'amics el número de seguidors. Mirar $max.
+d'amics, posar com a número d'amics el número de seguidors. Mirar $max.
+
+test1 = function(){
+	return typeof(this.user) == "object" && this.user != null && this.user.followers_count > this.user.friends_count;
+}
+db.books.find(test1)
+
 5) Crear la B.D. INSTA a MongoDB : 
 5.1) Una Collection o dues?
 5.2) Quins atributs tindran els documents
